@@ -1,6 +1,6 @@
 {
   "name": "白条还款",
-  "short_name": "白条还款",
+  "short_name": "京东白条",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
