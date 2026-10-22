@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e1251b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="白条还款">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>京东白条还款（反诈宣传演示）</title>
+<style>
+:root{--bg:#f3f3f5;--card:#fff;--text:#1c1c1e;--sub:#8a8a90;--line:#ececf0;--red:#e1251b;--red2:#ff5b3e;--soft:#fff0ee;--ok:#16a34a;--mask:rgba(0,0,0,.45);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101012;--card:#1c1c1f;--text:#f2f2f4;--sub:#8e8e93;--line:#2c2c30;--soft:#2b1b19;--mask:rgba(0,0,0,.65)}}
+:root[data-theme="dark"]{--bg:#101012;--card:#1c1c1f;--text:#f2f2f4;--sub:#8e8e93;--line:#2c2c30;--soft:#2b1b19;--mask:rgba(0,0,0,.65)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}
+.app{max-width:480px;margin:0 auto;padding-bottom:40px}
+.top{background:linear-gradient(160deg,var(--red),var(--red2));color:#fff;padding:22px 20px 64px;display:flex;justify-content:space-between;align-items:center}
+.top h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.5px}
+.tag{font-size:11px;opacity:.35}
+.card{background:var(--card);border-radius:14px;margin:12px 14px 0;padding:18px}
+.bill{margin-top:-46px;box-shadow:0 6px 20px rgba(225,37,27,.15)}
+.lbl{color:var(--sub);font-size:13px}
+.owed{display:flex;align-items:baseline;font-size:38px;font-weight:700;margin:2px 0 12px;font-variant-numeric:tabular-nums}
+.owed input{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--text);font:inherit;padding:0}
+.owed small{font-size:20px;margin-right:2px}
+.meta{display:flex;gap:12px;border-top:1px solid var(--line);padding-top:12px}
+.meta div{flex:1}
+.meta b{display:block;font-weight:600;font-variant-numeric:tabular-nums}
+h2{font-size:16px;margin:0 0 12px}
+.amt{display:flex;align-items:baseline;border-bottom:2px solid var(--line);padding-bottom:6px}
+.amt:focus-within{border-color:var(--red)}
+.amt span{font-size:28px;font-weight:700;margin-right:6px}
+.amt input{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--text);font:700 32px/1.2 inherit;font-family:inherit;font-variant-numeric:tabular-nums}
+.amt input::placeholder{color:var(--sub);font-weight:400;font-size:17px}
+.chips{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:none;color:var(--text);border-radius:20px;padding:5px 14px;font:inherit;font-size:13px;cursor:pointer}
+.chip:hover,.chip:focus-visible{border-color:var(--red);color:var(--red);outline:0}
+.err{color:var(--red);font-size:13px;min-height:20px;margin:8px 0 0}
+.field{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.field:last-of-type{border:0}
+.field label{width:76px;color:var(--sub);font-size:14px;flex:none}
+.field input{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--text);font:inherit;text-align:right}
+.hint{font-size:12px;color:var(--sub);margin:6px 0 0}
+.btn{display:block;width:100%;border:0;border-radius:26px;padding:13px;font:inherit;font-size:17px;font-weight:600;color:#fff;background:linear-gradient(90deg,var(--red),var(--red2));cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid var(--soft);outline-offset:2px}
+.cta{margin:18px 14px 0;width:calc(100% - 28px)}
+.rec{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.rec:last-child{border:0}
+.rec em{font-style:normal;font-weight:600}
+.empty{color:var(--sub);text-align:center;padding:8px 0}
+.foot{text-align:center;color:var(--sub);font-size:12px;margin:18px 20px 0}
+.foot button{background:none;border:0;color:var(--sub);font:inherit;cursor:pointer;text-decoration:underline;padding:2px 4px}
+.foot #disc{font-size:11px}
+.full{margin:8px 0 12px;line-height:1.7;text-align:left;background:var(--card);border-radius:10px;padding:10px 12px}
+.foot .rs{display:block;margin:6px auto 0}
+.mask{position:fixed;inset:0;background:var(--mask);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mask.on{display:flex}
+.sheet{width:100%;max-width:480px;background:var(--card);border-radius:18px 18px 0 0;padding:18px 20px calc(22px + env(safe-area-inset-bottom,0px));animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sh{display:flex;justify-content:space-between;align-items:center;font-weight:600}
+.x{background:none;border:0;color:var(--sub);font-size:24px;line-height:1;cursor:pointer}
+.big{text-align:center;font-size:36px;font-weight:700;margin:14px 0 6px;font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.row .lbl{flex:none}
+.bank{display:flex;align-items:center;gap:8px;text-align:right}
+.ico{width:28px;height:28px;border-radius:50%;color:#fff;font-size:14px;font-weight:700;display:grid;place-items:center;flex:none}
+.ok{width:60px;height:60px;border-radius:50%;background:var(--ok);color:#fff;font-size:34px;display:grid;place-items:center;margin:8px auto 6px}
+.c{text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><h1>京东白条</h1><span class="tag">反诈演示</span></header>
+
+  <section class="card bill">
+    <div class="lbl">本期待还（元）</div>
+    <div class="owed"><small>¥</small><input id="owed" inputmode="decimal" autocomplete="off" maxlength="12" aria-label="本期待还金额"></div>
+    <div class="meta">
+      <div><span class="lbl">最后还款日</span><b id="due">--</b></div>
+      <div><span class="lbl">可用额度（元）</span><b id="avail">--</b></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>还款金额</h2>
+    <div class="amt"><span>¥</span><input id="amount" inputmode="decimal" autocomplete="off" placeholder="请输入还款金额"></div>
+    <div class="chips">
+      <button class="chip" data-k="all">全部还清</button>
+      <button class="chip" data-k="half">还一半</button>
+      <button class="chip" data-k="min">最低还款（10%）</button>
+    </div>
+    <p class="err" id="err" role="alert"></p>
+  </section>
+
+  <section class="card">
+    <h2>账单信息</h2>
+    <div class="field"><label for="dueIn">最后还款日</label><input id="dueIn" type="date"></div>
+    <div class="field"><label for="availIn">可用额度</label><input id="availIn" inputmode="decimal" autocomplete="off" placeholder="单位：元"></div>
+    
+  </section>
+
+  <section class="card">
+    <h2>绑定的银行卡</h2>
+    <div class="field"><label for="bank">银行名称</label><input id="bank" list="banks" maxlength="12" placeholder="例如：招商银行"></div>
+    <div class="field"><label for="tail">卡号尾号</label><input id="tail" inputmode="numeric" maxlength="4" placeholder="4 位数字"></div>
+    
+    <datalist id="banks"><option value="工商银行"><option value="建设银行"><option value="农业银行"><option value="中国银行"><option value="招商银行"><option value="交通银行"><option value="邮储银行"><option value="中信银行"><option value="浦发银行"><option value="民生银行"><option value="兴业银行"><option value="平安银行"><option value="光大银行"><option value="广发银行"></datalist>
+  </section>
+
+  <button class="btn cta" id="pay">立即还款</button>
+
+  <section class="card">
+    <h2>还款记录</h2>
+    <div id="recs"></div>
+  </section>
+
+  <div class="foot">
+    <button id="disc" aria-expanded="false" aria-controls="discTxt">免责条款</button>
+    <div id="discTxt" class="full" hidden>1. 本页面为反诈宣传教育用途的演示页面，其中的金额、银行名称、卡号尾号、日期等均为使用者自行输入的虚拟内容。<br>2. 本页面不连接任何真实的支付或银行系统，不会产生真实扣款，也不构成任何还款凭证。<br>3. 本页面与京东及其关联公司无关。请勿将页面内容或截图用于证明真实交易、欺骗他人或任何违法用途。<br>4. 实际还款方式与还款结果，请以京东官方 App 为准。</div>
+    <button id="reset" class="rs">重置演示数据</button>
+  </div>
+</div>
+
+<div class="mask" id="mask">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div id="v1">
+      <div class="sh"><span>确认还款</span><button class="x" id="close" aria-label="关闭">×</button></div>
+      <div class="big">¥<span id="sAmt"></span></div>
+      <div class="row"><span class="lbl">还款项目</span><span>京东白条账单</span></div>
+      <div class="row"><span class="lbl">付款账户</span><span class="bank"><span class="ico" id="sIco"></span><span><span id="sBank"></span><br><span class="lbl" id="sTail"></span></span></span></div>
+      <button class="btn" id="confirm" style="margin-top:14px">确认还款</button>
+    </div>
+    <div id="v2" hidden class="c">
+      <div class="ok">✓</div>
+      <div style="font-weight:600;font-size:18px">还款成功</div>
+      <div class="big">¥<span id="rAmt"></span></div>
+      <p class="lbl" id="rInfo" style="margin:0 0 6px"></p>
+      <p class="lbl" style="margin:0 0 14px;font-size:11px">反诈宣传演示，非真实交易</p>
+      <button class="btn" id="done">完成</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEY='jd-baitiao-demo-v1', LIMIT=2000000;
+  var ds=function(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+  var init=function(){var d=new Date();d.setDate(d.getDate()+7);return{owed:238650,avail:1761350,due:ds(d),bank:'招商银行',tail:'8888',recs:[]}};
+  var st=init();
+  try{var raw=localStorage.getItem(KEY);if(raw)st=Object.assign(st,JSON.parse(raw))}catch(e){}
+  var $=function(s){return document.querySelector(s)};
+  var save=function(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+  var fmt=function(c){return(c/100).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})};
+  var esc=function(s){return String(s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})};
+  var hue=function(n){var h=7;for(var i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%360;return h};
+  var p2=function(n){return String(n).padStart(2,'0')};
+  var pending=0;
+
+  
+  $('#dueIn').value=st.due;$('#availIn').value=(st.avail/100).toFixed(2);
+  $('#bank').value=st.bank;$('#tail').value=st.tail;
+
+  function render(){
+    if(document.activeElement!==$('#owed'))$('#owed').value=fmt(st.owed);
+    $('#avail').textContent='¥'+fmt(st.avail);
+    var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(st.due||'');
+    $('#due').textContent=m?(+m[1]===new Date().getFullYear()?'':m[1]+'年')+(+m[2])+'月'+(+m[3])+'日':'--';
+    $('#pay').disabled=st.owed<=0;
+    $('#pay').textContent=st.owed<=0?'本期账单已还清':'立即还款';
+    $('#recs').innerHTML=st.recs.length?st.recs.map(function(r){
+      return '<div class="rec"><div><em>白条还款</em><div class="lbl">'+esc(r.bank)+'（尾号'+esc(r.tail)+'）· '+esc(r.t)+'</div></div><em>-'+fmt(r.amt)+'</em></div>'
+    }).join(''):'<div class="empty">还没有还款记录</div>';
+  }
+
+  function setAmt(c){$('#amount').value=(c/100).toFixed(2);$('#err').textContent=''}
+
+  $('#amount').addEventListener('input',function(e){
+    var v=e.target.value.replace(/[^\d.]/g,'');
+    var i=v.indexOf('.');
+    if(i>-1)v=v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'').slice(0,2);
+    e.target.value=v;$('#err').textContent='';
+  });
+  document.querySelectorAll('.chip').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(st.owed<=0)return;
+      var k=b.dataset.k;
+      setAmt(k==='all'?st.owed:k==='half'?Math.max(1,Math.floor(st.owed/2)):Math.min(st.owed,Math.ceil(st.owed*0.1)));
+    });
+  });
+  $('#bank').addEventListener('input',function(e){st.bank=e.target.value.trim();save()});
+  $('#tail').addEventListener('input',function(e){e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);st.tail=e.target.value;save()});
+  $('#dueIn').addEventListener('input',function(e){st.due=e.target.value;save();render()});
+  $('#availIn').addEventListener('input',function(e){
+    var v=e.target.value.replace(/[^\d.]/g,'');var i=v.indexOf('.');
+    if(i>-1)v=v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'').slice(0,2);
+    e.target.value=v;st.avail=Math.round((parseFloat(v)||0)*100);save();render();
+  });
+
+  function fail(m){$('#err').textContent=m}
+
+  $('#pay').addEventListener('click',function(){
+    var c=Math.round(parseFloat($('#amount').value)*100);
+    if(!(c>0))return fail('请输入大于 0 的还款金额');
+    if(c>st.owed)return fail('还款金额不能超过待还总额 ¥'+fmt(st.owed));
+    if(!st.bank)return fail('请先填写银行名称');
+    if(st.tail.length<4)return fail('请填写 4 位卡号尾号');
+    pending=c;
+    $('#sAmt').textContent=fmt(c);
+    $('#sBank').textContent=st.bank+'储蓄卡';
+    $('#sTail').textContent='尾号 '+st.tail;
+    var ic=$('#sIco');ic.textContent=st.bank.charAt(0);ic.style.background='hsl('+hue(st.bank)+',60%,45%)';
+    $('#v1').hidden=false;$('#v2').hidden=true;
+    $('#confirm').disabled=false;$('#confirm').textContent='确认还款';
+    $('#mask').classList.add('on');
+  });
+
+  $('#confirm').addEventListener('click',function(){
+    var b=$('#confirm');b.disabled=true;b.textContent='还款处理中…';
+    setTimeout(function(){
+      var d=new Date(),t=p2(d.getMonth()+1)+'-'+p2(d.getDate())+' '+p2(d.getHours())+':'+p2(d.getMinutes());
+      st.owed-=pending;st.avail+=pending;$('#availIn').value=(st.avail/100).toFixed(2);
+      st.recs.unshift({amt:pending,bank:st.bank,tail:st.tail,t:t});
+      st.recs=st.recs.slice(0,8);save();
+      $('#rAmt').textContent=fmt(pending);
+      $('#rInfo').textContent='已从'+st.bank+'储蓄卡（尾号'+st.tail+'）扣款，剩余待还 ¥'+fmt(st.owed);
+      $('#v1').hidden=true;$('#v2').hidden=false;
+      render();
+    },900);
+  });
+
+  function closeSheet(){$('#mask').classList.remove('on')}
+  $('#close').addEventListener('click',closeSheet);
+  $('#mask').addEventListener('click',function(e){if(e.target.id==='mask'&&!$('#v1').hidden&&!$('#confirm').disabled)closeSheet()});
+  $('#done').addEventListener('click',function(){closeSheet();$('#amount').value=''});
+  $('#disc').addEventListener('click',function(){var t=$('#discTxt');t.hidden=!t.hidden;this.setAttribute('aria-expanded',String(!t.hidden))});
+  var ow=$('#owed');
+  ow.addEventListener('focus',function(){ow.value=(st.owed/100).toFixed(2);setTimeout(function(){ow.select()},0)});
+  ow.addEventListener('input',function(){
+    var v=ow.value.replace(/[^\d.]/g,'');var i=v.indexOf('.');
+    if(i>-1)v=v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'').slice(0,2);
+    ow.value=v;st.owed=Math.round((parseFloat(v)||0)*100);save();render();
+  });
+  ow.addEventListener('blur',function(){ow.value=fmt(st.owed)});
+  ow.addEventListener('keydown',function(e){if(e.key==='Enter')ow.blur()});
+  $('#reset').addEventListener('click',function(){
+    st=init();save();$('#dueIn').value=st.due;$('#availIn').value=(st.avail/100).toFixed(2);$('#bank').value=st.bank;$('#tail').value=st.tail;$('#amount').value='';$('#err').textContent='';render();
+  });
+
+  render();
+})();
+</script>
+<script>if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body>
+</html>
